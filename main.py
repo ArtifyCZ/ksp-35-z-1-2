@@ -40,31 +40,34 @@ def is_between(a, b, c):
     b = on_right(a, b)
     return (c == on_right(a, c)) and (c == on_left(b, c))
 
-# This set does not contain every combination, but some of them.
-on_same_diagonal = set()
-for i in canon:
-    for j in canon:
-        if i is j:
-            continue
-        if (i, j) in on_same_diagonal or (j, i) in on_same_diagonal:
-            continue
-        if is_on_same_diagonal(i, j):
-            on_same_diagonal.add((i, j))
-            pass
-        pass
+def calc_diag_a(pos):
+    x, y = pos
+    return x - y
+
+def calc_diag_b(pos):
+    x, y = pos
+    return y - x
+
+from collections import defaultdict
+
+diagonals_a = defaultdict(list) # from left top to right down
+diagonals_b = defaultdict(list) # from left bottom to right top
+
+for pos in canon:
+    diag_a = calc_diag_a(pos)
+    diag_b = calc_diag_b(pos)
+    diagonals_a[diag_a].append(pos)
+    diagonals_b[diag_b].append(pos)
     pass
 
-for (a, b) in on_same_diagonal.copy():
-    for (c, d) in on_same_diagonal.copy():
-        if is_between(a, b, c):
-            on_same_diagonal.remove((a, b))
-            on_same_diagonal.add((a, c))
-            break
-        pass
-    continue
+def sort_diag(diag):
+    diag.sort(key=lambda pos: pos[0]) # `lambda (x, y): x` is not valid syntax
+    pass
 
-for (a, b) in on_same_diagonal:
-    a = canon_ids[a]
-    b = canon_ids[b]
-    print(f"{a} {b}")
+for diag, vals in diagonals_a.items():
+    if len(vals) < 2:
+        continue
+    sort_diag(vals)
+    print(canon_ids[vals[0]], canon_ids[vals[1]])
     break
+    pass
